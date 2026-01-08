@@ -35,6 +35,16 @@ func lastNonWipCommit(repository *git.Repository) (*object.Commit, int, error) {
 	}
 }
 
+func hasTrackedChanges(status *git.Status) bool {
+	for _, fileStatus := range *status {
+		if fileStatus.Staging != git.Untracked || fileStatus.Worktree != git.Untracked {
+			return true
+		}
+	}
+
+	return false
+}
+
 func main() {
 	execName := filepath.Base(os.Args[0])
 	unwipCommand := execName == "git-unwip"
@@ -85,17 +95,9 @@ func main() {
 		return
 	}
 
-	hasTrackedChanges := false
-	for _, fileStatus := range status {
-		if fileStatus.Staging != git.Untracked || fileStatus.Worktree != git.Untracked {
-			hasTrackedChanges = true
-			break
-		}
-	}
-
 	if status.IsClean() {
 		fmt.Println("Nothing to commit, working tree clean")
-	} else if !status.IsClean() && !hasTrackedChanges {
+	} else if !status.IsClean() && !hasTrackedChanges(&status) {
 		fmt.Println("Nothing to commit, all changes are to untracked files")
 	} else {
 		if *dryRunFlag {
