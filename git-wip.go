@@ -4,6 +4,8 @@ import (
 	"flag"
 	"fmt"
 	"log"
+	"os"
+	"path/filepath"
 
 	"github.com/go-git/go-git/v6"
 	"github.com/go-git/go-git/v6/plumbing"
@@ -34,8 +36,11 @@ func lastNonWipCommit(repository *git.Repository) (*object.Commit, error) {
 }
 
 func main() {
+	execName := filepath.Base(os.Args[0])
+	unwipCommand := execName == "git-unwip"
+
 	dryRunFlag := flag.Bool("dry-run", false, "a dry run without generating a new commit")
-	unwipFlag := flag.Bool("unwip", false, "Unpacks wip commits")
+	unwipFlag := flag.Bool("unwip", unwipCommand, "Unpacks wip commits")
 	flag.Parse()
 
 	repository, err := git.PlainOpen(".")
