@@ -12,7 +12,7 @@ import (
 	"github.com/go-git/go-git/v6/plumbing/object"
 )
 
-func lastNonWipCommit(repository *git.Repository) (*object.Commit, error) {
+func lastNonWipCommit(repository *git.Repository) (*object.Commit, int, error) {
 	commitIter, err := repository.Log(&git.LogOptions{})
 	if err != nil {
 		log.Fatal(err)
@@ -24,13 +24,13 @@ func lastNonWipCommit(repository *git.Repository) (*object.Commit, error) {
 	for {
 		c, err := commitIter.Next()
 		if err != nil {
-			return nil, err
+			return nil, 0, err
 		}
 
 		if c.Message == "wip" {
 			wipCommits += 1
 		} else {
-			return c, nil
+			return c, wipCommits, nil
 		}
 	}
 }
@@ -59,7 +59,7 @@ func main() {
 	}
 
 	if *unwipFlag {
-		lastNonWipCommit, err := lastNonWipCommit(repository)
+		lastNonWipCommit, wipCommitsCount, err := lastNonWipCommit(repository)
 		if err != nil {
 			log.Fatal(err)
 		}
@@ -72,7 +72,7 @@ func main() {
 		if headCommitRef.Hash() == lastNonWipCommit.Hash {
 			fmt.Println("No wip commits")
 		} else {
-			fmt.Println("Reverted HEAD to last non wip commit:", lastNonWipCommit.Hash)
+			fmt.Printf("Removed %d wip commit(s) and reverted HEAD to last non wip commit: %s\n", wipCommitsCount, lastNonWipCommit.Hash)
 			err = worktree.Reset(&git.ResetOptions{
 				Commit: plumbing.NewHash(lastNonWipCommit.Hash.String()),
 			})
