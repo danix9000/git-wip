@@ -6,6 +6,7 @@ import (
 	"log"
 	"os"
 	"path/filepath"
+	"strings"
 
 	"github.com/go-git/go-git/v6"
 	"github.com/go-git/go-git/v6/plumbing"
@@ -27,7 +28,7 @@ func lastNonWipCommit(repository *git.Repository) (*object.Commit, int, error) {
 			return nil, 0, err
 		}
 
-		if c.Message == "wip" {
+		if strings.EqualFold(strings.TrimSpace(c.Message), "wip") {
 			wipCommits += 1
 		} else {
 			return c, wipCommits, nil
