@@ -1,0 +1,26 @@
+# .goreleaser.yaml
+version: 2
+
+builds:
+  - main: .
+    binary: git-wip
+    goos: [darwin, linux]
+    goarch: [amd64, arm64]
+
+archives:
+  - formats: [tar.gz]
+    files:
+      - none*          # no extra files besides the binary
+
+brews:
+  - repository:
+      owner: danix9000
+      name: homebrew-tap
+    name: git-wip
+    homepage: "https://github.com/danix9000/git-wip"
+    description: "Quickly create and remove wip commits"
+    install: |
+      bin.install "git-wip"
+      bin.install_symlink "git-wip" => "git-unwip"
+    test: |
+      system bin/"git-wip", "--help"
