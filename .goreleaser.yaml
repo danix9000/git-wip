@@ -16,6 +16,7 @@ brews:
   - repository:
       owner: danix9000
       name: homebrew-tap
+      token: "{{ .Env.HOMEBREW_TAP_GITHUB_TOKEN }}"
     name: git-wip
     homepage: "https://github.com/danix9000/git-wip"
     description: "Quickly create and remove wip commits"
