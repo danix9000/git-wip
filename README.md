@@ -1,6 +1,6 @@
 # git-wip
 
-Quickly create and remove "wip" commits.
+Create and remove wip commits.
 
 `git-wip` stages all tracked changes and creates a commit with the message "wip". When you're ready to continue working, `git-unwip` removes consecutive wip commits from HEAD and leaves your changes unstaged.
 
